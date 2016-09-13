@@ -1,10 +1,13 @@
 var itemsLayer;
 var cat;
+var basket;
 var xSpeed = 0; //カートの移動速度
 
 var detectedX;　 //現在タッチしているX座標
 var savedX;　 //前回タッチしていたX座標
 var touching = false;　 //タッチ状況管理用flag
+var audioEngine;
+var i = 1;
 
 var gameScene = cc.Scene.extend({
   onEnter: function() {
@@ -12,6 +15,11 @@ var gameScene = cc.Scene.extend({
     gameLayer = new game();
     gameLayer.init();
     this.addChild(gameLayer);
+
+    audioEngine = cc.audioEngine;
+    if (audioEngine.isMusicPlaying()) {
+      audioEngine.playMusic(res.bgm , true);
+    }
   }
 });
 
@@ -35,11 +43,22 @@ var game = cc.Layer.extend({
 
     //ショッピングカートを操作するレイヤー
     topLayer = cc.Layer.create();
-    this.addChild(topLayer);
-    cat = cc.Sprite.create(res.cat_png);
-    topLayer.addChild(cat, 0);
-    cat.setPosition(240, 24);
+    this.addChild(topLayer,0);
+
+    cat = cc.Sprite.create(res.cat_0png);
+
+
+    basket = cc.Sprite.create(res.basket_png);
+    topLayer.addChild(cat,2);
+    topLayer.addChild(basket,0);
+    cat.addChild(basket,0);
+
+
+    basket.setPosition(cat.getPosition().x+75,cat.getPosition().y+80);
+    cat.setPosition(240, 64);
+
     this.schedule(this.addItem, 1);
+
     //タッチイベントのリスナー追加
     cc.eventManager.addListener(touchListener, this);
     //カートの移動のため　Update関数を1/60秒ごと実行させる　
@@ -68,11 +87,25 @@ var game = cc.Layer.extend({
       //detectedX変数が更新されても対応できるようにする
       savedX = detectedX;
       if (xSpeed > 0) {
+
         cat.setFlippedX(true);
+        basket.setPosition(basket.getPosition().x/2,basket.getPosition().y)
+
+        i+=1;
+        if(i==1){cat.initWithFile(res.cat_1png);cat.setFlippedX(true);}
+        if(i==2){cat.initWithFile(res.cat_2png);cat.setFlippedX(true);}
+        if(i==3){i=0}
       }
       if (xSpeed < 0) {
         cat.setFlippedX(false);
+        basket.setPosition(75,80);
+
+        i+=1;
+        if(i==1){cat.initWithFile(res.cat_1png);}
+        if(i==2){cat.initWithFile(res.cat_2png);}
+        if(i==3){i=0}
       }
+
       cat.setPosition(cat.getPosition().x + xSpeed, cat.getPosition().y);
     }
   }
@@ -104,12 +137,12 @@ var Item = cc.Sprite.extend({
   update: function(dt) {
     //果物の処理　座標をチェックしてカートの接近したら
     if (this.getPosition().y < 35 && this.getPosition().y > 30 &&
-      Math.abs(this.getPosition().x - cat.getPosition().x) < 10 && !this.isbug) {
+      Math.abs(this.getPosition().x - basket.getPosition().x) < 10 && !this.isbug) {
       gameLayer.removeItem(this);
       console.log("FRUIT");
     }
     //虫の処理　座標をチェックしてカートの接近したら　フルーツより虫に当たりやすくしている
-    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - cat.getPosition().x) < 25 &&
+    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - basket.getPosition().x) < 25 &&
       this.isbug) {
       gameLayer.removeItem(this);
       console.log("bug");
