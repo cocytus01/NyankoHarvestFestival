@@ -137,12 +137,12 @@ var Item = cc.Sprite.extend({
   update: function(dt) {
     //果物の処理　座標をチェックしてカートの接近したら
     if (this.getPosition().y < 35 && this.getPosition().y > 30 &&
-      Math.abs(this.getPosition().x - basket.getPosition().x) < 10 && !this.isbug) {
+      Math.abs(this.getPosition().x - cat.getPosition().x) < 10 && !this.isbug) {
       gameLayer.removeItem(this);
       console.log("FRUIT");
     }
     //虫の処理　座標をチェックしてカートの接近したら　フルーツより虫に当たりやすくしている
-    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - basket.getPosition().x) < 25 &&
+    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - cat.getPosition().x) < 25 &&
       this.isbug) {
       gameLayer.removeItem(this);
       console.log("bug");
