@@ -1,5 +1,5 @@
 var itemsLayer;
-var cart;
+var cat;
 var xSpeed = 0; //カートの移動速度
 
 var detectedX;　 //現在タッチしているX座標
@@ -36,9 +36,9 @@ var game = cc.Layer.extend({
     //ショッピングカートを操作するレイヤー
     topLayer = cc.Layer.create();
     this.addChild(topLayer);
-    cart = cc.Sprite.create(res.cart_png);
-    topLayer.addChild(cart, 0);
-    cart.setPosition(240, 24);
+    cat = cc.Sprite.create(res.cat_png);
+    topLayer.addChild(cat, 0);
+    cat.setPosition(240, 24);
     this.schedule(this.addItem, 1);
     //タッチイベントのリスナー追加
     cc.eventManager.addListener(touchListener, this);
@@ -68,12 +68,12 @@ var game = cc.Layer.extend({
       //detectedX変数が更新されても対応できるようにする
       savedX = detectedX;
       if (xSpeed > 0) {
-        cart.setFlippedX(true);
+        cat.setFlippedX(true);
       }
       if (xSpeed < 0) {
-        cart.setFlippedX(false);
+        cat.setFlippedX(false);
       }
-      cart.setPosition(cart.getPosition().x + xSpeed, cart.getPosition().y);
+      cat.setPosition(cat.getPosition().x + xSpeed, cat.getPosition().y);
     }
   }
 
@@ -82,13 +82,13 @@ var game = cc.Layer.extend({
 var Item = cc.Sprite.extend({
   ctor: function() {
     this._super();
-    //ランダムに爆弾と果物を生成する
+    //ランダムに虫と果物を生成する
     if (Math.random() < 0.5) {
-      this.initWithFile(res.bomb_png);
-      this.isBomb = true;
+      this.initWithFile(res.bug_png);
+      this.isbug = true;
     } else {
-      this.initWithFile(res.strawberry_png);
-      this.isBomb = false;
+      this.initWithFile(res.apple_png);
+      this.isbug = false;
     }
   },
   //アイテムが生成された後、描画されるときに実行
@@ -104,15 +104,15 @@ var Item = cc.Sprite.extend({
   update: function(dt) {
     //果物の処理　座標をチェックしてカートの接近したら
     if (this.getPosition().y < 35 && this.getPosition().y > 30 &&
-      Math.abs(this.getPosition().x - cart.getPosition().x) < 10 && !this.isBomb) {
+      Math.abs(this.getPosition().x - cat.getPosition().x) < 10 && !this.isbug) {
       gameLayer.removeItem(this);
       console.log("FRUIT");
     }
-    //爆弾の処理　座標をチェックしてカートの接近したら　フルーツより爆弾に当たりやすくしている
-    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - cart.getPosition().x) < 25 &&
-      this.isBomb) {
+    //虫の処理　座標をチェックしてカートの接近したら　フルーツより虫に当たりやすくしている
+    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - cat.getPosition().x) < 25 &&
+      this.isbug) {
       gameLayer.removeItem(this);
-      console.log("BOMB");
+      console.log("bug");
     }
     //地面に落ちたアイテムは消去
     if (this.getPosition().y < -30) {

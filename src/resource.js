@@ -1,12 +1,8 @@
 var res = {
-  bomb_png: "res/bomb.png",
-  cart_png: "res/cart.png",
-  strawberry_png: "res/strawberry.png",
-//  leftbutton_png: "res/leftbutton.png",
-//  rightbutton_png: "res/rightbutton.png",
-  background_png: "res/background.png",
-//  touchorigin_png: "res/touchorigin.png",
-//  touchend_png: "res/touchend.png"
+  bug_png: "res/S/bug.png",
+  cat_png: "res/S/cat1.png",
+  apple_png: "res/S/apple.png",
+  background_png: "res/S/game_bg.png",
 };
 
 var g_resources = [];
