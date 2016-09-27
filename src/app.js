@@ -2,12 +2,13 @@ var itemsLayer;
 var cat;
 var basket;
 var xSpeed = 0; //カートの移動速度
-
+var flg = -1;
 var detectedX;　 //現在タッチしているX座標
 var savedX;　 //前回タッチしていたX座標
 var touching = false;　 //タッチ状況管理用flag
 var audioEngine;
 var i = 1;
+var score = 0;
 
 var gameScene = cc.Scene.extend({
   onEnter: function() {
@@ -47,15 +48,20 @@ var game = cc.Layer.extend({
 
     cat = cc.Sprite.create(res.cat_0png);
 
+    scoreText = cc.LabelTTF.create("りんご:" +score ,"Stencil Std","20",cc.TEXT_ALIGNMENT_CENTER);
+    this.addChild(scoreText);
+    scoreText.setPosition(400,50);
 
     basket = cc.Sprite.create(res.basket_png);
     topLayer.addChild(cat,2);
+    topLayer.addChild(itemsLayer,1);
     topLayer.addChild(basket,0);
+
     cat.addChild(basket,0);
+    cat.setPosition(240, 65);
+    //basket.setPosition(cat.getPosition().x+40,cat.getPosition().y+20);
+    basket.setPosition(75,80);
 
-
-    basket.setPosition(cat.getPosition().x+75,cat.getPosition().y+80);
-    cat.setPosition(240, 64);
 
     this.schedule(this.addItem, 1);
 
@@ -79,16 +85,18 @@ var game = cc.Layer.extend({
       //差分でカートが右にいくか左にいくかを判断する
       if (deltaX > 0) {
         xSpeed = -2;
+        flg = 1;
       }
       if (deltaX < 0) {
         xSpeed = 2;
+        flg = -1;
       }
       //saveXに今回のX座標を代入し、onTouchMovedイベントで
       //detectedX変数が更新されても対応できるようにする
       savedX = detectedX;
       if (xSpeed > 0) {
-
         cat.setFlippedX(true);
+        basket.setFlippedX(true);
         basket.setPosition(basket.getPosition().x/2,basket.getPosition().y)
 
         i+=1;
@@ -98,6 +106,8 @@ var game = cc.Layer.extend({
       }
       if (xSpeed < 0) {
         cat.setFlippedX(false);
+        basket.setFlippedX(false);
+        //basket.setPosition(cat.getPosition().x+40,cat.getPosition().y+20);
         basket.setPosition(75,80);
 
         i+=1;
@@ -107,16 +117,17 @@ var game = cc.Layer.extend({
       }
 
       cat.setPosition(cat.getPosition().x + xSpeed, cat.getPosition().y);
+      //basket.setPosition(basket.getPosition().x , basket.getPosition().y);
+      //basket.setPosition(75 + xSpeed,80);
     }
   }
-
 });
 
 var Item = cc.Sprite.extend({
   ctor: function() {
     this._super();
     //ランダムに虫と果物を生成する
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.1) {
       this.initWithFile(res.bug_png);
       this.isbug = true;
     } else {
@@ -135,17 +146,28 @@ var Item = cc.Sprite.extend({
     this.scheduleUpdate();
   },
   update: function(dt) {
-    //果物の処理　座標をチェックしてカートの接近したら
-    if (this.getPosition().y < 35 && this.getPosition().y > 30 &&
-      Math.abs(this.getPosition().x - cat.getPosition().x) < 10 && !this.isbug) {
+    //当たり判定
+    //var basketBoundingBox = cc.pAdd(cat.getPosition(), cc.p(50*flg, 10));
+    var basketBoundingBox = cc.pAdd(cat.getPosition(), cc.p(50*flg, 30));
+    var fruitBoundingBox = this.getBoundingBox();
+    //rectIntersectsRectは２つの矩形が交わっているかチェックする
+    var Hit = cc.rectContainsPoint(fruitBoundingBox, basketBoundingBox);
+    if (Hit) {
+      //削除する*/
       gameLayer.removeItem(this);
-      console.log("FRUIT");
+      console.log("FRUIT x:"+this.getPosition().x);
+      score ++;
+      scoreText.setString("りんご:"+score);
     }
     //虫の処理　座標をチェックしてカートの接近したら　フルーツより虫に当たりやすくしている
-    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - cat.getPosition().x) < 25 &&
+    if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - basket.getPosition().x) < 25 &&
       this.isbug) {
       gameLayer.removeItem(this);
       console.log("bug");
+      if(score > 0){
+        score -= 10;
+        scoreText.setString("りんご:"+score);
+      }
     }
     //地面に落ちたアイテムは消去
     if (this.getPosition().y < -30) {
