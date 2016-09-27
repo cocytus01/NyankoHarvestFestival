@@ -8,7 +8,15 @@ var savedX;　 //前回タッチしていたX座標
 var touching = false;　 //タッチ状況管理用flag
 var audioEngine;
 var i = 1;
-var score = 0;
+var score1 = 0;
+var score2 = 0;
+var score3 = 0;
+var scorelabel1;
+var scorelabel2;
+var scorelabel3;
+
+var time = 60;
+var time_label;
 
 var gameScene = cc.Scene.extend({
   onEnter: function() {
@@ -48,9 +56,29 @@ var game = cc.Layer.extend({
 
     cat = cc.Sprite.create(res.cat_0png);
 
-    scoreText = cc.LabelTTF.create("りんご:" +score ,"Stencil Std","20",cc.TEXT_ALIGNMENT_CENTER);
+    counter = cc.Sprite.create(res.counter_png);
+    this.addChild(counter);
+    counter.setPosition(415,24);
+
+    /*scoreText = cc.LabelTTF.create("0",score ,"Arial","100");
     this.addChild(scoreText);
-    scoreText.setPosition(400,50);
+    scoreText.fillStyle = "black";
+    scoreText.setPosition(400,50);*/
+
+    scorelabel1 = new cc.LabelTTF( "0", "PixelMplus12", 25);
+    scorelabel1.setPosition(cc.p(462, 18));
+    scorelabel1.fillStyle = "black";
+    this.addChild(scorelabel1);
+
+    scorelabel2 = new cc.LabelTTF( "0", "PixelMplus12", 25);
+    scorelabel2.setPosition(cc.p(432, 18));
+    scorelabel2.fillStyle = "black";
+    this.addChild(scorelabel2);
+
+    scorelabel3 = new cc.LabelTTF( "0", "PixelMplus12", 25);
+    scorelabel3.setPosition(cc.p(402, 18));
+    scorelabel3.fillStyle = "black";
+    this.addChild(scorelabel3);
 
     basket = cc.Sprite.create(res.basket_png);
     topLayer.addChild(cat,2);
@@ -59,7 +87,6 @@ var game = cc.Layer.extend({
 
     cat.addChild(basket,0);
     cat.setPosition(240, 65);
-    //basket.setPosition(cat.getPosition().x+40,cat.getPosition().y+20);
     basket.setPosition(75,80);
 
 
@@ -156,18 +183,33 @@ var Item = cc.Sprite.extend({
       //削除する*/
       gameLayer.removeItem(this);
       console.log("FRUIT x:"+this.getPosition().x);
-      score ++;
-      scoreText.setString("りんご:"+score);
+
+      score1++;
+      //1桁が9以上になったら10桁を＋1
+      if (score1 > 9) {
+        score2++;
+        if (score2 > 9) {
+          score3++;
+          score2 = 0;
+          scorelabel3.setString(score3);
+        }
+        score1 = 0;
+        scorelabel2.setString(score2)
+      }
+      scorelabel1.setString(score1);
     }
     //虫の処理　座標をチェックしてカートの接近したら　フルーツより虫に当たりやすくしている
     if (this.getPosition().y < 35 && Math.abs(this.getPosition().x - basket.getPosition().x) < 25 &&
       this.isbug) {
       gameLayer.removeItem(this);
       console.log("bug");
-      if(score > 0){
-        score -= 10;
-        scoreText.setString("りんご:"+score);
-      }
+        //score --;
+        //scoreText.setString(score);
+        /*if(score > 0){
+          score = 0;
+          scoreText.setString("りんご:"+score);
+        }*/
+
     }
     //地面に落ちたアイテムは消去
     if (this.getPosition().y < -30) {

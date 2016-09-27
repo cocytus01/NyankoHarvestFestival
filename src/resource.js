@@ -3,6 +3,7 @@ var res = {
   Title_png:"res/S/title_j.png",
   start_png:"res/S/title_start_1_J.png",
   help_png:"res/S/help_1.png",
+  counter_png:"res/S/game_counter.png",
   bug_png: "res/S/bug.png",
   basket_png:"res/S/basket1.png",
   cat_0png: "res/S/cat0.png",
