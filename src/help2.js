@@ -1,17 +1,9 @@
 //myScene.js
-var MyLayer = cc.Layer.extend({
+var helpLayer2 = cc.Layer.extend({
     ctor: function() {
         this._super();
 
         var size = cc.director.getWinSize();
-
-        var helpBtn = new cc.MenuItemImage(res.help_png, res.help_png, function() {
-            cc.director.runScene(new helpScene1());
-        });
-        helpBtn.setPosition(size.width / 2, size.height / 2 - 130);
-        var help = new cc.Menu(helpBtn);
-        help.setPosition(0, 0);
-        this.addChild(help, 100);
 
         //音楽再生エンジン
         audioEngine = cc.audioEngine;
@@ -24,13 +16,9 @@ var MyLayer = cc.Layer.extend({
          TitleBG_png.setPosition(size.width / 2, size.height / 2);
         this.addChild(TitleBG_png);
 
-        var Title_png = cc.Sprite.create(res.Title_png);
-         Title_png.setPosition(size.width / 2, size.height / 2 + 50);
-        this.addChild(Title_png);
-
-        var start_png = cc.Sprite.create(res.start_png);
-         start_png.setPosition(size.width / 2, size.height / 2 - 30);
-        this.addChild(start_png);
+        var howto2 = cc.Sprite.create(res.howto2_png);
+         howto2.setPosition(size.width / 2, size.height / 2 + 50);
+        this.addChild(howto2);
 
         //add code
          //タップイベントリスナーを登録する
@@ -55,14 +43,15 @@ var MyLayer = cc.Layer.extend({
         if (audioEngine.isMusicPlaying()) {
           audioEngine.stopMusic();
         }
-        cc.director.runScene(new gameScene());
+        cc.director.runScene(new helpScene3());
+
     },
 });
 
-var MyScene = cc.Scene.extend({
+var helpScene2 = cc.Scene.extend({
     onEnter: function() {
         this._super();
-        var layer = new MyLayer();
+        var layer = new helpLayer2();
         this.addChild(layer);
     }
 });
